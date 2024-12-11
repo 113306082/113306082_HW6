@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>1A2B</title>
+	<style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+	<h1>113306082_HW6_1A2B</h1>
+
+    <p>是時候來測試看看你的邏輯與推理能力了(若一次就猜中，請右轉彩券行!)</p>
+    <input id="guessInput" type="text" maxlength="4" placeholder="輸入4個不重複的數字">
+    <button onclick="submitGuess()">猜吧!</button>
+
+    <div id="message"></div>
+
+    <div class="result">
+        <h2>Attempts:</h2>
+        <ul id="history"></ul>
+    </div>
+
+    <script>
+        let answer = generateAnswer();
+        let attempts = 0;
+
+        function generateAnswer() {
+            const digits = [...Array(10).keys()]; // [0-9]
+            let answer = [];
+            while (answer.length < 4) {
+                const randomIndex = Math.floor(Math.random() * digits.length);
+                answer.push(digits.splice(randomIndex, 1)[0]);
+            }
+            return answer;
+        }
+
+        function submitGuess() {
+            const input = document.getElementById('guessInput').value;
+            if (input.length !== 4) {
+            	alert("請輸入4個數字.");
+                return;
+            }
+            if (!isValidGuess(input)) {
+                alert("輸入4個不重複的數字.");
+                return;
+            }
+
+            const guess = input.split('').map(Number);
+            const result = checkGuess(guess);
+            attempts++;
+
+            document.getElementById('history').innerHTML += `<li>第${attempts}次：${input} → ${result}</li>`;
+
+            if (result === "4A0B") {
+                alert(`恭喜你! 你使用了 ${attempts} 次機會.`);
+                resetGame();
+            }
+
+            document.getElementById('guessInput').value = '';
+        }
+
+        function isValidGuess(input) {
+            if (input.length !== 4 || !/^[0-9]{4}$/.test(input)) return false;
+            const digits = new Set(input);
+            return digits.size === 4;
+        }
+
+        function checkGuess(guess) {
+            let a = 0, b = 0;
+            guess.forEach((num, index) => {
+                if (num === answer[index]) {
+                    a++;
+                } else if (answer.includes(num)) {
+                    b++;
+                }
+            });
+            return `${a}A${b}B`;
+        }
+
+        function resetGame() {
+            answer = generateAnswer();
+            attempts = 0;
+            document.getElementById('history').innerHTML = '';
+        }
+    </script>
+
+</body>
+</html>
